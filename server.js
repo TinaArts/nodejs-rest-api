@@ -4,7 +4,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-
+const logger = require('./lib/logger')(module);
 const app = express();
 
 // requests of content-type - application/json
