@@ -1,0 +1,20 @@
+web:
+  container_name: nodejs-api
+  restart: always
+  build: .
+  volumes:
+    - "./:/var/www/app"
+  ports:
+    - "8081:8081"
+#  links:
+#    - mongodb
+#  command: "npm start"
+
+
+#mongodb:
+#  container_name: mongodb-api
+#  image: mongo
+#  ports:
+#    - "27017:27017"
+#  volumes:
+#    - mongodb-data:/data/db
