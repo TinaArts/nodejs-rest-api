@@ -12,10 +12,14 @@ const router = express.Router();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.set('json spaces', 40);
+
 // routes
 require('./routes')(router, {});
-
 app.use('/api/v1', router);
+
+// error handling
+require('./lib/errorHandler')(app);
 
 // listen
 app.listen(8081, () => {
