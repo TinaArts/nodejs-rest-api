@@ -5,7 +5,6 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const logger = require('./lib/logger')(module);
-const config = require('./config');
 const app = express();
 const router = express.Router();
 
@@ -14,8 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // routes
-require('./routes/card')(router, {});
-require('./routes/auth')(router, {});
+require('./routes')(router, {});
 
 app.use('/api/v1', router);
 

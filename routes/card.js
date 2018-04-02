@@ -1,7 +1,7 @@
 'use strict';
 
-let cardRoutes = (app, db) => {
-    app.route('/card')
+let cardRoutes = (router, db) => {
+    router.route('/card')
         .post((req, res) => {
             res.json({"message": "Create card"})
         })
@@ -9,7 +9,7 @@ let cardRoutes = (app, db) => {
             res.json({"message": "Get card"})
         });
 
-    app.route('/card/:id')
+    router.route('/card/:id')
         .put((req, res) => {
             res.json({"message": "Update card"})
         })
