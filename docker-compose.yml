@@ -4,17 +4,18 @@ web:
   build: .
   volumes:
     - "./:/var/www/app"
+    - "/var/www/app/node_modules"
   ports:
     - "8081:8081"
-#  links:
-#    - mongodb
-#  command: "npm start"
+  links:
+    - mongodb
+  command: "npm run watch"
 
 
-#mongodb:
-#  container_name: mongodb-api
-#  image: mongo
-#  ports:
-#    - "27017:27017"
-#  volumes:
-#    - mongodb-data:/data/db
+mongodb:
+  container_name: mongodb-api
+  image: mongo
+  ports:
+    - "27017:27017"
+  volumes:
+    - mongodb-data:/data/db
