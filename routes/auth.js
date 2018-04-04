@@ -1,12 +1,18 @@
 'use strict';
 
-let authRouter = (router, {}) => {
-    router.post('/login', (req, res) => {
-        res.json({'message': 'Login'});
+const user = require('../controller/user');
+
+let authRouter = (router) => {
+    router.post('/registration', (req, res) => {
+        user.registration(req, res);
     });
 
-    router.delete('/logout/:user_id', (req, res) => {
-        res.json({'message': 'Logout'});
+    router.post('/login', (req, res) => {
+        user.login(req, res);
+    });
+
+    router.delete('/logout', (req, res) => {
+        user.logout(req, res);
     });
 };
 
