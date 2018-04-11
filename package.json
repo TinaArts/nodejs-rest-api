@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "watch": "nodemon server.js"
+    "watch": "nodemon server.js",
+    "lint": "eslint ."
   },
   "author": "Tina",
   "license": "MIT",
@@ -24,11 +25,5 @@
     "eslint-config-prettier": "^1.6.0",
     "eslint-plugin-import": "^2.2.0",
     "nodemon": "^1.17.3"
-  },
-  "eslintConfig": {
-    "extends": [
-      "airbnb-base",
-      "prettier"
-    ]
   }
 }
