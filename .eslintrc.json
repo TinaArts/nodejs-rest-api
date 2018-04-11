@@ -1,0 +1,27 @@
+{
+    "extends": "airbnb-base",
+    "plugins": [
+        "import"
+    ],
+    "rules": {
+        "arrow-body-style": [
+            "error",
+            "as-needed"
+        ],
+        "no-console": "off",
+        "comma-dangle": [
+            "error",
+            "never"
+        ],
+        "func-names": [
+            "error",
+            "as-needed"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ],
+        "indent": ["error", 4],
+        "consistent-return": "off"
+    }
+}
