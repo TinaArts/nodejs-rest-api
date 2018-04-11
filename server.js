@@ -18,7 +18,7 @@ require('./routes')(router);
 app.use('/api/v1', router);
 
 // error handling
-require('./lib/errorHandler')(app);
+require('./lib/handler')(app);
 
 
 // listen
