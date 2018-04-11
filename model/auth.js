@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 
 let authSchema = new mongoose.Schema({
-    user: {
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },

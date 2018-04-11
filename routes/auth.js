@@ -1,19 +1,14 @@
 'use strict';
 
 const user = require('../controller/user');
+const auth = require('../lib/auth');
 
 let authRouter = (router) => {
-    router.post('/registration', (req, res) => {
-        user.registration(req, res);
-    });
+    router.post('/registration', user.registration);
 
-    router.post('/login', (req, res) => {
-        user.login(req, res);
-    });
+    router.post('/login', user.login);
 
-    router.delete('/logout', (req, res) => {
-        user.logout(req, res);
-    });
+    router.delete('/logout', auth, user.logout);
 };
 
 module.exports = authRouter;

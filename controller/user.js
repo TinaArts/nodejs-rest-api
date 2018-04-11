@@ -1,7 +1,5 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userModel = require('../model/user');
 const authModel = require('../model/auth');
@@ -9,7 +7,14 @@ const config = require('../config');
 
 let auth = {};
 
-auth.registration = (req, res) => {
+/**
+ * User registration.
+ * Generate auth token.
+ * @param req
+ * @param res
+ * @param next
+ */
+auth.registration = (req, res, next) => {
     let user = new userModel({
         username: req.body.username,
         email: req.body.email,
@@ -18,53 +23,104 @@ auth.registration = (req, res) => {
 
     user.save((err) => {
         if (err) {
-            return res.status(500).json({status: false, message: err.message});
+            res.status(500);
+            return next(err);
         }
 
-        let token = jwt.sign({id: user._id}, config.jwtHash, {
-            expiresIn: config.jwtExpiresIn
+        let token = jwt.sign({id: user._id}, config.jwt.hash, {
+            expiresIn: config.jwt.expiresIn
         });
 
         let auth = new authModel({
-            user: user._id,
+            user_id: user._id,
             token: token,
-            died_date: Date.now() + config.jwtExpiresIn * 1000
+            died_date: Date.now() + config.jwt.expiresIn * 1000
         });
 
         auth.save((err) => {
             if (err) {
-                return res.status(500).json({status: false, message: err.message});
+                res.status(500);
+                return next(err);
             }
 
-            res.status(200).json({status: true, data: {token: auth.token}});
+            user = user.toObject();
+            user.token = auth.token;
+            delete user.password;
+
+            res.data = user;
+            next();
         });
     });
 };
 
-auth.login = (req, res) => {
-    let token = req.headers['x-access-token'];
-
-    if (!token) {
-        return res.status(401).json({status: false, message: 'No token provided.'});
+/**
+ * User login by email and password.
+ * Generate auth token.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+auth.login = (req, res, next) => {
+    if (!req.body.email || !req.body.password) {
+        res.status(500);
+        return next(new Error('Email and password is required'));
     }
 
-    jwt.verify(token, config.jwtHash, function (err, decoded) {
-        if (err) {
-            return res.status(500).json({status: false, message: err.message});
+    userModel.findOne({email: req.body.email}, function (err, user) {
+        if (!user) {
+            res.status(401);
+            return next(new Error('Invalid credentials'));
         }
 
-        userModel.findById(decoded.id, '-passwor1d', function (err, user) {
-            if (!user) {
-                return res.status(404).json({status: false, message: "User not found"});
+        user.comparePassword(req.body.password, function (err, isMatch) {
+            if (err) {
+                return next(err);
+            }
+        });
+
+        let token = jwt.sign({id: user._id}, config.jwt.hash, {
+            expiresIn: config.jwt.expiresIn
+        });
+
+        let auth = {
+            user_id: user._id,
+            token: token,
+            died_date: Date.now() + config.jwt.expiresIn * 1000
+        };
+
+        authModel.findOneAndUpdate({user_id: user._id}, auth, {new: true}, (err) => {
+            if (err) {
+                res.status(500);
+                return next(err);
             }
 
-            res.status(200).json({status: true, data: user});
+            user = user.toObject();
+            user.token = auth.token;
+            delete user.password;
+
+            res.data = user;
+            next();
         });
     });
 };
 
-auth.logout = (req, res) => {
-    res.status(200).send({status: true, data: {token: null}});
+/**
+ * User logout.
+ * Check auth by token.
+ * @param req
+ * @param res
+ * @param next
+ */
+auth.logout = (req, res, next) => {
+    authModel.findOneAndRemove({user_id: req.decoded.id}, function (err) {
+        if (err) {
+            res.status(500);
+            return next(err);
+        }
+        delete req.decoded.id;
+        next();
+    });
 };
 
 module.exports = auth;

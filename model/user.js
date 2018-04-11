@@ -8,23 +8,31 @@ let userSchema = new mongoose.Schema({
         type: String,
         trim: true,
         unique: true,
-        required: true
+        required: true,
+        min: 3
     },
     email: {
         type: String,
         trim: true,
         unique: true,
-        required: true
+        required: true,
+        validate: {
+            validator: e => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(e),
+            message: 'Please make sure your email is typed correctly.'
+        }
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        min: 3
     },
     created_date: {
         type: Date,
         default: Date.now
     }
 });
+
+// userSchema.index({email: 1});
 
 // don't use arrow operator
 userSchema.pre('save', function (next) {
@@ -41,6 +49,14 @@ userSchema.post('save', (doc, next) => {
     console.log(`Post -> save - begin ...`);
     next();
 });
+
+userSchema.methods.comparePassword = function(candidatePassword, cb) {
+    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+        if (err) {
+            return cb(err);
+        }
+    });
+};
 
 let userModel = mongoose.model('user', userSchema);
 
